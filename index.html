@@ -230,7 +230,7 @@
     var bb = bigBase(c.seven);
     var bbText = bb.join(" ");
     html += '<div class="bigbase-box">21组两码大底（直选，命中至少一组两码）<b>' + bb.length + ' 注</b>';
-    html += '<details style="margin-top:8px;"><summary>展开查看全部号码</summary><div class="bigbase-list">' + bbText + '</div></details>';
+    html += '<div class="bigbase-list">' + bbText + '</div>';
     html += '<button class="btn ghost small" onclick="copyText(\'' + bbText + '\', this)">复制大底</button>';
     html += '</div>';
 
