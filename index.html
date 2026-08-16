@@ -39,7 +39,10 @@
   .chip { min-width:40px; text-align:center; padding:6px 8px; border-radius:8px; border:1px solid var(--line); font-family:"Consolas",monospace; font-size:14px; background:#fff; }
   .chip.ok { background:var(--ok-bg); border-color:var(--ok); color:var(--ok); font-weight:700; }
   .chip.no { background:var(--bad-bg); border-color:#fecaca; color:var(--bad); }
-  .verdict { margin-top:14px; font-size:15px; }
+  .bigbase-box { margin-top:12px; border:1px solid var(--line); border-radius:10px; padding:12px; font-size:13px; color:var(--muted); }
+.bigbase-box b { display:block; font-size:19px; color:var(--ink); margin-top:3px; font-family:"Consolas",monospace; }
+.bigbase-list { margin-top:8px; max-height:220px; overflow:auto; font-family:"Consolas",monospace; font-size:13px; color:var(--ink); line-height:1.8; word-break:break-all; }
+.verdict { margin-top:14px; font-size:15px; }
   .tag { display:inline-block; padding:4px 12px; border-radius:999px; font-weight:700; }
   .tag.dui { background:var(--ok-bg); color:var(--ok); }
   .tag.cuo { background:var(--bad-bg); color:var(--bad); }
@@ -141,6 +144,20 @@
     return nextCode.indexOf(combo.charAt(0)) >= 0 && nextCode.indexOf(combo.charAt(1)) >= 0;
   }
 
+  // 21组两码的大底：所有三位数中，至少含有七码里的两个不同数字（即命中至少一组两码）
+  function bigBase(seven) {
+    var res = [];
+    for (var n = 0; n < 1000; n++) {
+      var str = String(n); while (str.length < 3) str = "0" + str;
+      var cnt = 0, seen = {};
+      for (var j = 0; j < 3; j++) {
+        if (seven.indexOf(str.charAt(j)) >= 0 && !seen[str.charAt(j)]) { cnt++; seen[str.charAt(j)] = true; }
+      }
+      if (cnt >= 2) res.push(str);
+    }
+    return res;
+  }
+
   // 复制文本（剪贴板 API + 兼容回退）
   function copyText(text, btn) {
     var done = function() {
@@ -208,6 +225,13 @@
     html += '<div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">';
     html += '<button class="btn ghost small" onclick="copyText(\'' + c.seven + '\', this)">复制七码胆组</button>';
     html += '<button class="btn ghost small" onclick="copyText(\'' + c.combos.join(" ") + '\', this)">复制21组两码</button>';
+    html += '</div>';
+
+    var bb = bigBase(c.seven);
+    var bbText = bb.join(" ");
+    html += '<div class="bigbase-box">21组两码大底（直选，命中至少一组两码）<b>' + bb.length + ' 注</b>';
+    html += '<details style="margin-top:8px;"><summary>展开查看全部号码</summary><div class="bigbase-list">' + bbText + '</div></details>';
+    html += '<button class="btn ghost small" onclick="copyText(\'' + bbText + '\', this)">复制大底</button>';
     html += '</div>';
 
     if (hasNext) {
