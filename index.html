@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>福彩3D 轨迹定胆 · 七码胆组 21组两码 预测工具</title>
+<style>
+  :root { --bg:#f4f6fb; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb; --brand:#2f6fed; --brand-dark:#1d4ed8; --ok:#16a34a; --ok-bg:#ecfdf3; --bad:#dc2626; --bad-bg:#fef2f2; --warn:#b45309; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif; background:var(--bg); color:var(--ink); padding:24px 14px 60px; }
+  .wrap { max-width:1000px; margin:0 auto; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:13px; margin:0 0 18px; }
+  .tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  .tab { padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:#fff; cursor:pointer; font-size:14px; font-weight:600; color:var(--muted); }
+  .tab.active { background:var(--brand); color:#fff; border-color:var(--brand); }
+  .panel { display:none; background:var(--card); border-radius:14px; padding:20px; box-shadow:0 8px 24px rgba(30,64,175,.10); }
+  .panel.active { display:block; }
+  label { display:block; font-size:14px; font-weight:600; margin:12px 0 6px; }
+  input[type=text], textarea { width:100%; border:2px solid var(--line); border-radius:10px; padding:10px 12px; font-size:16px; font-family:"Consolas","SFMono-Regular",monospace; outline:none; background:#fff; color:var(--ink); }
+  input[type=text].big { font-size:26px; letter-spacing:10px; text-align:center; }
+  input[type=text].mid { font-size:16px; letter-spacing:2px; text-align:center; }
+  textarea { min-height:180px; font-size:14px; line-height:1.7; resize:vertical; }
+  input:focus, textarea:focus { border-color:var(--brand); }
+  .btn { margin-top:12px; background:var(--brand); color:#fff; border:none; border-radius:10px; padding:12px 16px; font-size:15px; font-weight:600; cursor:pointer; }
+  .btn:hover { background:var(--brand-dark); }
+  .btn.ghost { background:#fff; color:var(--brand); border:1px solid var(--brand); }
+  .btn.ghost:hover { background:#eef4ff; }
+  .btn.danger { background:#fff; color:var(--bad); border:1px solid var(--bad); }
+  .btn.small { padding:7px 12px; font-size:13px; margin-top:8px; }
+  .error { display:none; color:var(--bad); font-size:13px; margin-top:8px; }
+  .result { margin-top:20px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .box { border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; color:var(--muted); }
+  .box b { display:block; font-size:19px; color:var(--ink); margin-top:3px; font-family:"Consolas",monospace; letter-spacing:1px; }
+  .box.seven { grid-column:1 / -1; border:2px solid var(--brand); background:#eef4ff; }
+  .box.seven b { font-size:28px; letter-spacing:8px; color:var(--brand-dark); }
+  .chip-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .chip { min-width:40px; text-align:center; padding:6px 8px; border-radius:8px; border:1px solid var(--line); font-family:"Consolas",monospace; font-size:14px; background:#fff; }
+  .chip.ok { background:var(--ok-bg); border-color:var(--ok); color:var(--ok); font-weight:700; }
+  .chip.no { background:var(--bad-bg); border-color:#fecaca; color:var(--bad); }
+  .verdict { margin-top:14px; font-size:15px; }
+  .tag { display:inline-block; padding:4px 12px; border-radius:999px; font-weight:700; }
+  .tag.dui { background:var(--ok-bg); color:var(--ok); }
+  .tag.cuo { background:var(--bad-bg); color:var(--bad); }
+  .tag.na { background:#f3f4f6; color:var(--muted); }
+  .summary { display:flex; gap:10px; flex-wrap:wrap; margin:16px 0; }
+  .stat { flex:1; min-width:110px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px; text-align:center; }
+  .stat b { display:block; font-size:24px; }
+  .stat span { color:var(--muted); font-size:12px; }
+  .stat.green b { color:var(--ok); } .stat.red b { color:var(--bad); } .stat.blue b { color:var(--brand); }
+  table { width:100%; border-collapse:collapse; margin-top:10px; font-size:13px; }
+  th, td { border-bottom:1px solid var(--line); padding:8px 6px; text-align:center; vertical-align:top; }
+  th { background:#f8fafc; color:var(--muted); font-weight:600; white-space:nowrap; }
+  td.mono { font-family:"Consolas",monospace; }
+  .row-verdict { font-weight:700; }
+  .row-verdict.dui { color:var(--ok); } .row-verdict.cuo { color:var(--bad); }
+  details { margin-top:6px; }
+  details summary { cursor:pointer; color:var(--brand); font-size:12px; }
+  .hint { font-size:12px; color:var(--muted); margin-top:6px; }
+  .note { margin-top:16px; font-size:12px; color:var(--warn); line-height:1.6; }
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#2f6fed">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="3D七码">
+</head>
+<body>
+<div class="wrap">
+  <h1>福彩3D 轨迹定胆 · 七码胆组 21组两码 预测工具</h1>
+  <p class="sub">上期开奖号 → 七码胆组 → 21 组两码组合；自动判定每期对错并留存记录，支持批量预测与复制</p>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="single">单期预测</div>
+    <div class="tab" data-tab="batch">批量预测</div>
+    <div class="tab" data-tab="history">对错记录</div>
+  </div>
+
+  <div class="panel active" id="panel-single">
+    <label>上期开奖号（3 位，支持前导 0）</label>
+    <input type="text" id="sPrev" class="big" inputmode="numeric" maxlength="3" value="947">
+    <label>下期实际开奖号（可选，用于判定对错）</label>
+    <input type="text" id="sNext" class="big" inputmode="numeric" maxlength="3" placeholder="留空只看胆组">
+    <label>下期期号（可选，记录时显示）</label>
+    <input type="text" id="sQihao" class="mid" placeholder="例如 260815-1128">
+    <button class="btn" id="sGo">生成七码 + 21组两码 + 判定对错</button>
+    <div class="error" id="sErr">请输入 3 位数字（0-9）。</div>
+    <div class="result" id="sResult"></div>
+  </div>
+
+  <div class="panel" id="panel-batch">
+    <label>粘贴连续开奖记录（每行一个，格式：期号 开奖号，也可只写开奖号）</label>
+    <textarea id="bData" placeholder="260815-1127 947&#10;260815-1128 617&#10;260815-1129 914&#10;..."></textarea>
+    <button class="btn" id="bGo">批量预测（相邻两期配对，自动计入对错记录）</button>
+    <div class="error" id="bErr"></div>
+    <div class="result" id="bResult"></div>
+  </div>
+
+  <div class="panel" id="panel-history">
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn ghost" id="hExport">导出 CSV</button>
+      <button class="btn danger" id="hClear">清空记录</button>
+    </div>
+    <div class="result" id="hResult"></div>
+  </div>
+
+  <p class="note">规则：七码胆组 = 前一组轨迹 + 后一组轨迹 + 上期个位；21 组两码 = 七码任取 2 个的全部组合。两码“对”= 两个数字都出现在下期；整期“对”= 下期命中七码 ≥2 个。理论命中≥2 约 78.4%。仅供娱乐参考，不构成投注建议。</p>
+</div>
+
+<script>
+  var GROUPS = ["047","158","269","370","481","592","603","714","825","936"];
+  var STORE_KEY = "fc3d_qima_history_v1";
+
+  function union() {
+    var set = {};
+    for (var i = 0; i < arguments.length; i++) { var s = arguments[i]; for (var j = 0; j < s.length; j++) set[s[j]] = true; }
+    return Object.keys(set).sort().join("");
+  }
+  function combos7(seven) {
+    var res = [];
+    for (var i = 0; i < seven.length; i++) for (var j = i + 1; j < seven.length; j++) res.push(seven[i] + seven[j]);
+    return res;
+  }
+  function isValidCode(s) { return /^[0-9]{3}$/.test(s); }
+  function computeSeven(prevCode) {
+    var d = parseInt(prevCode.charAt(2), 10);
+    var target = GROUPS[d], prevG = GROUPS[(d + 9) % 10], nextG = GROUPS[(d + 1) % 10];
+    var seven = union(prevG, nextG, String(d));
+    return { d: d, target: target, prevG: prevG, nextG: nextG, six: union(prevG, nextG), seven: seven, combos: combos7(seven) };
+  }
+  function matchedDigits(code, seven) {
+    var arr = [];
+    for (var i = 0; i < code.length; i++) if (seven.indexOf(code.charAt(i)) >= 0) arr.push(code.charAt(i));
+    return arr;
+  }
+  function comboVerdict(combo, nextCode) {
+    return nextCode.indexOf(combo.charAt(0)) >= 0 && nextCode.indexOf(combo.charAt(1)) >= 0;
+  }
+
+  // 复制文本（剪贴板 API + 兼容回退）
+  function copyText(text, btn) {
+    var done = function() {
+      if (!btn) return;
+      var old = btn.textContent;
+      btn.textContent = "已复制 ✓";
+      setTimeout(function() { btn.textContent = old; }, 1200);
+    };
+    var fallback = function() {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", "");
+      ta.style.position = "fixed"; ta.style.top = "-9999px";
+      document.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function() { fallback(); done(); });
+    } else { fallback(); done(); }
+  }
+
+  // ===== 历史记录 =====
+  function loadHistory() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); } catch (e) { return []; } }
+  function saveHistory(h) { try { localStorage.setItem(STORE_KEY, JSON.stringify(h)); } catch (e) {} }
+  function recordKey(r) { return (r.nextQ || "") + "|" + r.prevCode + "|" + r.nextCode; }
+  function appendHistory(items) {
+    var h = loadHistory(), map = {}, added = 0;
+    for (var i = 0; i < h.length; i++) map[recordKey(h[i])] = true;
+    for (var j = 0; j < items.length; j++) { var k = recordKey(items[j]); if (!map[k]) { map[k] = true; h.push(items[j]); added++; } }
+    saveHistory(h);
+    return added;
+  }
+
+  // ===== 单期 =====
+  var sPrev = document.getElementById("sPrev"), sNext = document.getElementById("sNext"), sQihao = document.getElementById("sQihao");
+  var sErr = document.getElementById("sErr"), sResult = document.getElementById("sResult");
+
+  function renderSingle() {
+    var prev = sPrev.value.trim(), next = sNext.value.trim();
+    if (!isValidCode(prev)) { sErr.style.display = "block"; sResult.innerHTML = ""; return; }
+    sErr.style.display = "none";
+    var c = computeSeven(prev);
+    var hasNext = isValidCode(next);
+    var m = hasNext ? matchedDigits(next, c.seven) : [];
+    var k = m.length, dui = k >= 2;
+
+    var html = '<div class="grid">';
+    html += '<div class="box">上期个位<b>' + c.d + '</b></div>';
+    html += '<div class="box">目标轨迹<b>' + c.target + '</b></div>';
+    html += '<div class="box">前一组 / 后一组<b>' + c.prevG + ' / ' + c.nextG + '</b></div>';
+    html += '<div class="box">六码胆组<b>' + c.six + '</b></div>';
+    html += '<div class="box">补充数字（个位）<b>' + c.d + '</b></div>';
+    html += '<div class="box seven">七码胆组<b>' + c.seven + '</b></div></div>';
+
+    html += '<div class="chip-row">';
+    for (var i = 0; i < c.combos.length; i++) {
+      var cb = c.combos[i], cls = "chip", mark = "";
+      if (hasNext) { if (comboVerdict(cb, next)) { cls += " ok"; mark = "&#10003;"; } else { cls += " no"; mark = "&#10007;"; } }
+      html += '<span class="' + cls + '">' + cb + (mark ? " " + mark : "") + '</span>';
+    }
+    html += '</div>';
+
+    html += '<div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">';
+    html += '<button class="btn ghost small" onclick="copyText(\'' + c.seven + '\', this)">复制七码胆组</button>';
+    html += '<button class="btn ghost small" onclick="copyText(\'' + c.combos.join(" ") + '\', this)">复制21组两码</button>';
+    html += '</div>';
+
+    if (hasNext) {
+      html += '<div class="verdict">下期 ' + next + ' 命中七码：<b>' + (m.join("") || "无") + '</b>（' + k + ' 个）→ 整期判定：<span class="tag ' + (dui ? "dui" : "cuo") + '">' + (dui ? "对 ✓" : "错 ✗") + '</span></div>';
+      appendHistory([{ nextQ: sQihao.value.trim(), prevQ: "", prevCode: prev, nextCode: next, seven: c.seven, k: k, dui: dui }]);
+      html += '<div class="hint">已自动计入“对错记录”。</div>';
+    } else {
+      html += '<div class="verdict"><span class="tag na">未输入下期号，暂不判定对错</span></div>';
+    }
+    sResult.innerHTML = html;
+  }
+  document.getElementById("sGo").addEventListener("click", renderSingle);
+  sPrev.addEventListener("keydown", function(e){ if(e.key==="Enter") renderSingle(); });
+  sNext.addEventListener("keydown", function(e){ if(e.key==="Enter") renderSingle(); });
+  sQihao.addEventListener("keydown", function(e){ if(e.key==="Enter") renderSingle(); });
+
+  // ===== 批量 =====
+  var bData = document.getElementById("bData"), bErr = document.getElementById("bErr"), bResult = document.getElementById("bResult");
+  function parseBatch(text) {
+    var recs = [], lines = text.split(/\n+/);
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i].trim(); if (!ln) continue;
+      var tokens = ln.split(/\s+/);
+      var code = tokens[tokens.length - 1];
+      if (!isValidCode(code)) continue;
+      var qihao = tokens.length >= 2 ? tokens.slice(0, tokens.length - 1).join(" ") : "";
+      recs.push({ qihao: qihao, code: code });
+    }
+    return recs;
+  }
+
+  function renderBatch() {
+    var recs = parseBatch(bData.value);
+    if (recs.length < 2) { bErr.style.display = "block"; bErr.textContent = "请至少粘贴 2 期开奖号（相邻两期配对）。"; bResult.innerHTML = ""; return; }
+    bErr.style.display = "none";
+
+    var pairs = [], duiCount = 0, histItems = [];
+    for (var i = 0; i < recs.length - 1; i++) {
+      var prev = recs[i], cur = recs[i + 1];
+      var c = computeSeven(prev.code);
+      var m = matchedDigits(cur.code, c.seven), k = m.length, dui = k >= 2;
+      if (dui) duiCount++;
+      var good = 0, chips = [];
+      for (var j = 0; j < c.combos.length; j++) {
+        var cb = c.combos[j], ok = comboVerdict(cb, cur.code);
+        if (ok) good++;
+        chips.push('<span class="chip ' + (ok ? "ok" : "no") + '">' + cb + (ok ? " &#10003;" : " &#10007;") + '</span>');
+      }
+      pairs.push({ idx: i + 1, prevQ: prev.qihao, curQ: cur.qihao, prevCode: prev.code, curCode: cur.code,
+                   seven: c.seven, m: m.join(""), k: k, dui: dui, good: good, combosText: c.combos.join(" "), chips: chips.join("") });
+      histItems.push({ nextQ: cur.qihao, prevQ: prev.qihao, prevCode: prev.code, nextCode: cur.code, seven: c.seven, k: k, dui: dui });
+    }
+
+    var n = pairs.length, cuo = n - duiCount, rate = (duiCount / n * 100).toFixed(2);
+    var added = appendHistory(histItems);
+
+    var html = '<div class="summary">';
+    html += '<div class="stat blue"><b>' + n + '</b><span>预测期数</span></div>';
+    html += '<div class="stat green"><b>' + duiCount + '</b><span>对</span></div>';
+    html += '<div class="stat red"><b>' + cuo + '</b><span>错</span></div>';
+    html += '<div class="stat"><b>' + rate + '%</b><span>准确率（理论78.40%）</span></div></div>';
+    html += '<div class="hint">已自动计入“对错记录”（新增 ' + added + ' 条）。</div>';
+
+    html += '<table><thead><tr><th>序号</th><th>上期期号</th><th>下期期号</th><th>上期号</th><th>下期号</th><th>七码胆组</th><th>命中数字</th><th>命中数</th><th>两码对</th><th>结果</th></tr></thead><tbody>';
+    for (var r = 0; r < pairs.length; r++) {
+      var p = pairs[r];
+      html += '<tr><td>' + p.idx + '</td><td class="mono">' + p.prevQ + '</td><td class="mono">' + p.curQ + '</td>';
+      html += '<td class="mono">' + p.prevCode + '</td><td class="mono">' + p.curCode + '</td><td class="mono">' + p.seven + '</td>';
+      html += '<td class="mono">' + (p.m || "—") + '</td><td>' + p.k + '</td><td>' + p.good + '/21</td>';
+      html += '<td class="row-verdict ' + (p.dui ? "dui" : "cuo") + '">' + (p.dui ? "对 ✓" : "错 ✗") + '</td></tr>';
+      html += '<tr><td></td><td colspan="9"><details><summary>查看 21 组两码</summary><div class="chip-row">' + p.chips + '</div>';
+      html += '<button class="btn ghost small" onclick="copyText(\'' + p.combosText + '\', this)">复制本行两码</button></details></td></tr>';
+    }
+    html += '</tbody></table>';
+    bResult.innerHTML = html;
+  }
+  document.getElementById("bGo").addEventListener("click", renderBatch);
+
+  // ===== 对错记录页 =====
+  function renderHistory() {
+    var h = loadHistory();
+    var el = document.getElementById("hResult");
+    if (!h.length) { el.innerHTML = '<div class="hint">暂无对错记录。先在“单期预测”或“批量预测”中生成结果，会自动计入这里。</div>'; return; }
+    var dui = 0, cuo = 0;
+    for (var i = 0; i < h.length; i++) if (h[i].dui) dui++; else cuo++;
+    var html = '<div class="summary">';
+    html += '<div class="stat blue"><b>' + h.length + '</b><span>记录条数</span></div>';
+    html += '<div class="stat green"><b>' + dui + '</b><span>对</span></div>';
+    html += '<div class="stat red"><b>' + cuo + '</b><span>错</span></div>';
+    html += '<div class="stat"><b>' + (h.length ? (dui / h.length * 100).toFixed(2) : "0.00") + '%</b><span>准确率（理论78.40%）</span></div></div>';
+    html += '<table><thead><tr><th>序号</th><th>下期期号</th><th>上期号</th><th>下期号</th><th>七码胆组</th><th>命中数</th><th>结果</th></tr></thead><tbody>';
+    for (var r = 0; r < h.length; r++) {
+      var it = h[r];
+      html += '<tr><td>' + (r + 1) + '</td><td class="mono">' + (it.nextQ || "—") + '</td><td class="mono">' + it.prevCode + '</td><td class="mono">' + it.nextCode + '</td>';
+      html += '<td class="mono">' + it.seven + '</td><td>' + it.k + '</td>';
+      html += '<td class="row-verdict ' + (it.dui ? "dui" : "cuo") + '">' + (it.dui ? "对 ✓" : "错 ✗") + '</td></tr>';
+    }
+    html += '</tbody></table>';
+    el.innerHTML = html;
+  }
+
+  function exportCsv() {
+    var h = loadHistory();
+    if (!h.length) { alert("暂无记录可导出。"); return; }
+    var rows = [["序号","下期期号","上期号","下期号","七码胆组","命中数","结果"]];
+    for (var i = 0; i < h.length; i++) { var it = h[i]; rows.push([i + 1, it.nextQ || "", it.prevCode, it.nextCode, it.seven, it.k, it.dui ? "对" : "错"]); }
+    var csv = "\ufeff" + rows.map(function(r){ return r.map(function(v){ return '"' + String(v).replace(/"/g,'""') + '"'; }).join(","); }).join("\r\n");
+    var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "福彩3D七码_对错记录.csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+  document.getElementById("hExport").addEventListener("click", exportCsv);
+  document.getElementById("hClear").addEventListener("click", function() { if (confirm("确定清空全部对错记录吗？")) { saveHistory([]); renderHistory(); } });
+
+  // ===== 切换标签 =====
+  var tabs = document.querySelectorAll(".tab");
+  for (var t = 0; t < tabs.length; t++) {
+    tabs[t].addEventListener("click", function() {
+      var name = this.getAttribute("data-tab");
+      for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+      this.classList.add("active");
+      document.getElementById("panel-single").classList.toggle("active", name === "single");
+      document.getElementById("panel-batch").classList.toggle("active", name === "batch");
+      document.getElementById("panel-history").classList.toggle("active", name === "history");
+      if (name === "history") renderHistory();
+    });
+  }
+
+  renderSingle();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('./sw.js').catch(function(){}); });
+}
+</script>
+</body>
+</html>
+
